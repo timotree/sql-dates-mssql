@@ -1,4 +1,9 @@
-"""Generates data for the `PayPeriods` table."""
+"""Generates data for the PayPeriods dimension table.
+
+This module provides functions to create a pay period dimension table with
+information about bi-weekly pay periods, including split-year handling and
+work day calculations across year boundaries.
+"""
 
 from dataclasses import dataclass
 from datetime import date, timedelta
@@ -18,7 +23,13 @@ logging.basicConfig(level=logging.INFO)
 
 @dataclass
 class DayCounts:
-    """Data class for holding day counts."""
+    """Data class for holding day counts within a pay period.
+
+    Attributes:
+        holidays: Number of holidays in the pay period.
+        days_in_year_start: Number of work days in the first year of the period.
+        days_in_year_end: Number of work days in the second year of the period.
+    """
 
     holidays: int
     days_in_year_start: int
@@ -26,7 +37,16 @@ class DayCounts:
 
 
 def adjust_pay_date(pay_date: date, pay_period_start: date) -> date:
-    """Adjusts the pay date if it falls on a holiday (excluding Black Friday)."""
+    """Adjusts the pay date if it falls on a holiday (excluding Black Friday).
+
+    Args:
+        pay_date: The pay date to adjust.
+        pay_period_start: The start date of the pay period.
+
+    Returns:
+        The adjusted pay date, shifted back one day if it falls on a holiday
+        (except for Black Friday).
+    """
     # Shift the pay date to Thursday if it falls on a holiday, except for Black
     # Friday
     is_bf = pay_period_start == nth_weekday_of_month(4, 6, 11, pay_period_start.year)
@@ -42,12 +62,12 @@ def get_day_counts(
     """Returns the counts of days within a pay period.
 
     Args:
-        dates: Table of date dimensions for the pay period
-        year_start: Year start
-        year_end: Year end
+        dates: Table of date dimensions for the pay period.
+        year_start: Year start.
+        year_end: Year end.
 
     Returns:
-        Data class of day counts
+        Data class of day counts.
     """
     is_start_year = dates["DateYear"] == year_start
     is_end_year = dates["DateYear"] == year_end
@@ -68,10 +88,10 @@ def get_pay_periods(dates: pd.DataFrame) -> pd.DataFrame:
     """Create the Pay Periods dimension table.
 
     Args:
-        dates: Table of date dimensions
+        dates: Table of date dimensions.
 
     Returns:
-        Table of pay period dimensions
+        Table of pay period dimensions.
     """
     # Start date = 1994-01-09 (PP 199401)
     index = 1

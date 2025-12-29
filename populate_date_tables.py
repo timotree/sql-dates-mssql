@@ -1,4 +1,9 @@
-"""Populates date tables."""
+"""Populates date-related tables in a SQL Server database.
+
+This module orchestrates the generation of date, pay period, and years dimension
+tables and writes them to a SQL Server database. Configuration is read from
+a JSON file.
+"""
 
 from datetime import date
 import json
@@ -6,6 +11,7 @@ import logging
 from typing import Any
 
 from dates import get_dates
+from fiscal_years import get_fiscal_years
 from modules.database import Connection, Database
 from pay_periods import get_pay_periods
 from years import get_years
@@ -23,10 +29,10 @@ def read_config(path: str = CONFIG_FILE) -> dict[str, Any]:
     """Reads configuration from a JSON file.
 
     Args:
-        path: Path to configuration file
+        path: Path to configuration file.
 
     Returns:
-        Parsed configuration dictionary
+        Parsed configuration dictionary.
     """
     try:
         with open(path, encoding="utf-8") as file:
@@ -43,7 +49,7 @@ def generate_and_store_data(config: dict[str, Any]) -> None:
     """Generates and stores date-related data in the database.
 
     Args:
-        config: Configuration dictionary
+        config: Configuration dictionary.
     """
     try:
         logging.info("Generating date data...")
@@ -80,7 +86,7 @@ def main():
     """Main entry point.
 
     Returns:
-        Exit status code (0 = success)
+        Exit status code (0 = success).
     """
     try:
         generate_and_store_data(read_config())

@@ -1,4 +1,9 @@
-"""Generates data for the `Years` table."""
+"""Generates data for the Years dimension table.
+
+This module provides functions to create a years dimension table with annual
+attributes including work days, holidays, leap year status, and political
+election information.
+"""
 
 from calendar import isleap
 import pandas as pd
@@ -16,10 +21,10 @@ def get_days_in_year(year: int) -> int:
     """Returns the number of days in a given year.
 
     Args:
-        year: Year
+        year: Year.
 
     Returns:
-        Days
+        Days.
     """
     return DAYS_PER_LEAP_YEAR if isleap(year) else DAYS_PER_YEAR
 
@@ -28,11 +33,11 @@ def get_years(dates: pd.DataFrame, pay_periods: pd.DataFrame) -> pd.DataFrame:
     """Create the Years dimension table.
 
     Args:
-        dates: Table of date dimensions
-        pay_periods: Table of pay period dimensions
+        dates: Table of date dimensions.
+        pay_periods: Table of pay period dimensions.
 
     Returns:
-        Table of year dimensions
+        Table of year dimensions.
     """
     year_df = dates[["DateYear"]].drop_duplicates().copy()
     year_df.sort_values("DateYear", inplace=True)

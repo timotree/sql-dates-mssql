@@ -1,4 +1,9 @@
-"""Generates data for the `Dates` table."""
+"""Generates data for the Dates dimension table.
+
+This module provides functions to create a comprehensive date dimension table
+including attributes such as day of week, month, holidays, work days, and
+calendar-based calculations.
+"""
 
 from datetime import date, datetime, timedelta
 
@@ -51,10 +56,10 @@ def get_cy_day(this_date: date) -> int:
     """Returns the numeric day of the calendar year for a date.
 
     Args:
-        this_date: Date
+        this_date: Date.
 
     Returns:
-        Day of the calendar year
+        Day of the calendar year.
     """
     return this_date.timetuple().tm_yday
 
@@ -63,10 +68,10 @@ def get_cy_week(this_date: date) -> int:
     """Returns the numeric week of the calendar year for a date.
 
     Args:
-        this_date: Date
+        this_date: Date.
 
     Returns:
-        Week of the calendar year
+        Week of the calendar year.
     """
     return int(this_date.strftime("%U")) + 1
 
@@ -75,10 +80,10 @@ def get_cy_quarter(month: int) -> int:
     """Returns the numeric quarter of the calendar year for a month.
 
     Args:
-        month: Month
+        month: Month.
 
     Returns:
-        Quarter of the calendar year
+        Quarter of the calendar year.
     """
     assert 1 <= month <= 12
 
@@ -89,10 +94,10 @@ def get_day_of_week_name(day_of_week: int) -> str:
     """Returns the full name of the day.
 
     Args:
-        day_of_week: Day of the week (SQL-based)
+        day_of_week: Day of the week (SQL-based).
 
     Returns:
-        Name of the day of the week
+        Name of the day of the week.
     """
     assert 1 <= day_of_week <= 7
 
@@ -103,10 +108,10 @@ def get_month_name(month: int) -> str:
     """Returns the full name of the month.
 
     Args:
-        month: Month
+        month: Month.
 
     Returns:
-        Name of the month
+        Name of the month.
     """
     assert 1 <= month <= 12
 
@@ -117,10 +122,10 @@ def to_date(iso_string: str) -> date:
     """Converts a string in ISO 8601 date format to a date object.
 
     Args:
-        iso_string: Date in ISO 8601 format
+        iso_string: Date in ISO 8601 format.
 
     Returns:
-        Date instance
+        Date instance.
     """
     return datetime.strptime(iso_string, "%Y-%m-%d").date()
 
@@ -129,10 +134,10 @@ def to_sql_weekday(this_date: date) -> int:
     """Converts the weekday number. SQL counts from Sunday = 1.
 
     Args:
-        this_date: Date
+        this_date: Date.
 
     Returns:
-        Day of the week from Sunday = 1 to Saturday = 6
+        Day of the week from Sunday = 1 to Saturday = 6.
     """
     return this_date.isoweekday() % 7 + 1
 
@@ -144,10 +149,10 @@ def is_last_day_of_month(this_date: date) -> bool:
     """Determines if the date is the last day of a month.
 
     Args:
-        this_date: Date
+        this_date: Date.
 
     Returns:
-        True if it's the last day of the month, False otherwise
+        True if it's the last day of the month, False otherwise.
     """
     next_day = this_date + timedelta(days=1)
     return next_day.month != this_date.month
@@ -157,10 +162,10 @@ def is_weekend(day_of_week: int) -> bool:
     """Determines if the date is a weekend.
 
     Args:
-        day_of_week: Day of the week (SQL-based)
+        day_of_week: Day of the week (SQL-based).
 
     Returns:
-        True if it's a weekend, False otherwise
+        True if it's a weekend, False otherwise.
     """
     assert 1 <= day_of_week <= 7
 
@@ -177,13 +182,13 @@ def nth_weekday_of_month(
     Thursday of November.
 
     Args:
-        n: The nth occurrence
-        weekday: Day of the week
-        month: Month
-        year: Year
+        n: The nth occurrence.
+        weekday: Day of the week.
+        month: Month.
+        year: Year.
 
     Returns:
-        Date
+        Date.
     """
     first_day = date(year, month, 1)
     first_weekday = to_sql_weekday(first_day)
@@ -199,10 +204,10 @@ def is_fixed_holiday(this_date: date) -> bool:
     """Determines if the date is a holiday of a fixed date.
 
     Args:
-        this_date: Date
+        this_date: Date.
 
     Returns:
-        True if it's a holiday, False otherwise
+        True if it's a holiday, False otherwise.
     """
     day_of_week = to_sql_weekday(this_date)
     is_weekday = 1 < day_of_week < 7
@@ -237,10 +242,10 @@ def is_floating_holiday(this_date: date) -> bool:
     """Determines if the date is a holiday of a floating date.
 
     Args:
-        this_date: Date
+        this_date: Date.
 
     Returns:
-        True if it's a holiday, False otherwise
+        True if it's a holiday, False otherwise.
     """
     year = this_date.year
     day_of_week = to_sql_weekday(this_date)
@@ -272,10 +277,10 @@ def is_holiday(this_date: date) -> bool:
     """Determines if the date is a holiday.
 
     Args:
-        this_date: Date
+        this_date: Date.
 
     Returns:
-        True if it's a holiday, False otherwise
+        True if it's a holiday, False otherwise.
     """
     return is_fixed_holiday(this_date) or is_floating_holiday(this_date)
 
@@ -284,10 +289,10 @@ def is_work_day(this_date: date) -> bool:
     """Determines if the date is a work day.
 
     Args:
-        this_date: Date
+        this_date: Date.
 
     Returns:
-        True if it's a work day, False otherwise
+        True if it's a work day, False otherwise.
     """
     return not (is_holiday(this_date) or is_weekend(to_sql_weekday(this_date)))
 
@@ -299,11 +304,11 @@ def create_dates(start: date, end: date) -> pd.DataFrame:
     """Creates a date table.
 
     Args:
-        start: Start date
-        end: End date
+        start: Start date.
+        end: End date.
 
     Returns:
-        Table of date dimensions
+        Table of date dimensions.
     """
     date_range = pd.date_range(start, end)
     dates = pd.DataFrame({"DateDate": date_range})
@@ -330,7 +335,7 @@ def fill_pay_days(dates: pd.DataFrame) -> None:
     """Fills the pay days.
 
     Args:
-        dates: Table of date dimensions
+        dates: Table of date dimensions.
     """
     assert not dates.empty
 
@@ -352,11 +357,11 @@ def get_dates(start: date, end: date) -> pd.DataFrame:
     """Wrapper function to create a date table.
 
     Args:
-        start: Start date in ISO 8601 format
-        end: End date in ISO 8601 format
+        start: Start date in ISO 8601 format.
+        end: End date in ISO 8601 format.
 
     Returns:
-        Table of date dimensions
+        Table of date dimensions.
     """
     dates = create_dates(start, end)
     fill_pay_days(dates)
